@@ -27,7 +27,7 @@ namespace Igtampe.LBL.Server {
         //For sending:
 
         /// <summary>Holds queue of all lines to send.</summary>
-        private Queue<string> Lines;
+        private readonly Queue<string> Lines;
         
 
         /// <summary>Creates an LBL Transfer</summary>

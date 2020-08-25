@@ -15,7 +15,7 @@ namespace Igtampe.LBL.Server {
         private int UploadPLevel = 2;
         private string RootDir = "LBL\\";
 
-        private Dictionary<int,LBLTransfer> Transfers;
+        private readonly Dictionary<int,LBLTransfer> Transfers;
 
         /// <summary>Creates and initializes an LBL</summary>
         public LBLExtension():base("LBL+","1.0") {
@@ -128,7 +128,7 @@ namespace Igtampe.LBL.Server {
 
         /// <summary>Generates an ID for a new LBL Transfer</summary>
         /// <returns>A random number from 0 to 99999</returns>
-        public int GenerateID() {return new Random().Next(0,99999);}
+        public static int GenerateID() {return new Random().Next(0,99999);}
 
         /// <summary>Creates a transfer</summary>
         /// <param name="Type"></param>
