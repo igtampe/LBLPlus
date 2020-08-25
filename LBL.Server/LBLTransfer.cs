@@ -22,6 +22,8 @@ namespace Igtampe.LBL.Server {
         /// <summary>LBL Transfer Types</summary>
         public enum LBLTransferType {Send, Receive}
 
+        public bool Busy { get; protected set; } = false;
+
         //For sending:
 
         /// <summary>Holds queue of all lines to send.</summary>
@@ -58,23 +60,51 @@ namespace Igtampe.LBL.Server {
         /// <param name="text"></param>
         public void Receive(string text) {
             if(Type == LBLTransferType.Send) { throw new InvalidOperationException("LBL Transfer isn't set to receive mode"); }
+            
+            //wait for not busy
+            while(Busy) { }
+            
+            //do the operation
+            Busy = true;
             File.AppendAllText(RootDir + Filename,text + "\n");
+            Busy = false;
         }
 
         public string Send() {
             if(Type == LBLTransferType.Receive) { throw new InvalidOperationException("LBL Transfer isn't set to send mode"); }
-            if(Lines.Count == 0) { return "LBL.PLSCLOSE"; }
-            return Lines.Dequeue();
+            
+            //wait for not busy
+            while(Busy) { }
+
+            //Do the operation
+            Busy = true;
+            
+            if(Lines.Count == 0) {
+                Busy = false;
+                return "LBL.PLSCLOSE"; 
+            }
+
+            String returnString = Lines.Dequeue();
+            Busy = false;
+            return returnString;
         }
 
         /// <summary>Closes this transfer</summary>
-        public void Close() {Lines?.Clear();}
+        public void Close() {
+            //wait for not busy
+            while(Busy) { }
+
+            //close
+            Lines?.Clear();
+        }
 
         public override string ToString() { return Filename + " (" + ID + ")"; }
         public override int GetHashCode() { return ID; }
         public override bool Equals(object obj) {
             LBLTransfer OtherTransfer = obj as LBLTransfer;
-            return OtherTransfer?.ID == ID;
+            string OtherFilename = obj.ToString();
+
+            return OtherTransfer?.ID == ID || OtherFilename.ToUpper() == Filename.ToUpper() || OtherFilename == ID.ToString();
         }
 
     }

@@ -59,5 +59,15 @@ namespace Igtampe.LBL.Server.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap LBL_Standalone {
+            get {
+                object obj = ResourceManager.GetObject("LBL_Standalone", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

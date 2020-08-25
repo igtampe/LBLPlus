@@ -30,8 +30,7 @@ namespace Igtampe.LBL.Server {
         }
 
         public static List<SwitchboardExtension> GetExtensions() {
-            List<SwitchboardExtension> extensions = new List<SwitchboardExtension>();
-            extensions.Add(new LBLExtension());
+            List<SwitchboardExtension> extensions = new List<SwitchboardExtension> {new LBLExtension()};
             return extensions;
         }
 
