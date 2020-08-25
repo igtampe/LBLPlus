@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>LBL Standalone.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="SwitchboardServer">
       <HintPath>A:\Downloads\Programs\TestPrograms\Switchboard\SwitchboardServer.dll</HintPath>
@@ -87,6 +90,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\LBL Standalone.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LBL Standalone.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
