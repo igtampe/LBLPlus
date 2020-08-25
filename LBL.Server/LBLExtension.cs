@@ -60,6 +60,7 @@ namespace Igtampe.LBL.Server {
                 "(text)             | Normal result for some commands\n" +
                 "LBL.OK             | Normal result for some commands\n" +
                 "LBL.EMPTY          | Empty directory/line\n" +
+                "LBL.BUSY           | File is busy. \n" +
                 "LBL.PLSCLOSE       | Reached end of file from download request. Close the request already!\n" +
                 "LBL.NOTFOUND       | File/directory/transfer not found.\n" +
                 "LBL.N              | Not enough permission level to execute.\n" +
@@ -81,10 +82,12 @@ namespace Igtampe.LBL.Server {
                     case "UPLOAD":
                         if(!User.CanExecute(UploadPLevel)) { return "LBL.N"; }
                         if(CommandSplit.Length != 3) { return "LBL.A"; }
+                        if(FileBusy(CommandSplit[2],out int BusyID)) { return BusyID.ToString() ; }
                         return CreateTransfer(LBLTransfer.LBLTransferType.Receive,false,CommandSplit[2]);
                     case "OVERWRITE":
                         if(!User.CanExecute(UploadPLevel)) { return "LBL.N"; }
                         if(CommandSplit.Length != 3) { return "LBL.A"; }
+                        if(FileBusy(CommandSplit[2],out int doot)) { return "LBL.BUSY"; }
                         return CreateTransfer(LBLTransfer.LBLTransferType.Receive,true,CommandSplit[2]);
                     case "APPEND":
                         if(!User.CanExecute(UploadPLevel)) { return "LBL.N"; }
@@ -145,8 +148,14 @@ namespace Igtampe.LBL.Server {
 
         /// <summary>Verifies the list of transfers to see if this file is busy</summary>
         /// <returns>True if the file is being dealt with by a transfer, false otherwise.</returns>
-        public bool FileBusy(string Filename) {
-            foreach(LBLTransfer transfer in Transfers.Values) {if(transfer.Filename.ToUpper() == Filename.ToUpper()) { return true; }}
+        private bool FileBusy(string Filename, out int TransferID) {
+            foreach(LBLTransfer transfer in Transfers.Values) {
+                if(transfer.Filename.ToUpper() == Filename.ToUpper()) {
+                    TransferID = transfer.ID;
+                    return true; 
+                }
+            }
+            TransferID = -1;
             return false;
         }
 
