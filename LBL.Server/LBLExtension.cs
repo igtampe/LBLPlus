@@ -48,20 +48,23 @@ namespace Igtampe.LBL.Server {
                 "APPEND~(ID)~(LINE) | Appends a line of text to the file on that transfer.\n" +
                 "REQUEST~(ID)       | Requests the next line of text from the file on that transfer.\n" +
                 "CLOSE~(ID)         | Closes Transfer with that ID\n" +
-                "DIR~(SUBDIR)       | Sends a comma separated list of the files available on the server in the\n" +
-                "                   | given subdirectory (as \\directory)\n" +
+                "DIR~(SUBDIR)       | Sends a combination of two comma separated lists separated by a tilde (~).\n" +
+                "                   | The first is of all directories, and the second is of all files. Give a\n" +
+                "                   | as \\directory\\\n" +
                 "PING               | Ping the LBLPlus Extension\n" +
                 "\n" +
                 "Results:\n" +
                 "(text)             | Normal result for some commands\n" +
                 "LBL.OK             | Normal result for some commands\n" +
+                "LBL.EMPTY          | Empty directory/line\n" +
+                "LBL.NOTFOUND       | File/directory/transfer not found." +
                 "LBL.N              | Not enough permission level to execute.\n" +
                 "LBL.A              | Argument Exception \n" +
                 "LBL.E:(E):(Stack)  | Unhandled exception with stacktrace \n";
         }
 
         public override string Parse(ref SwitchboardUser User,string Command) {
-            if(!Command.ToUpper().StartsWith("LBL:")) { return null; }
+            if(!Command.ToUpper().StartsWith("LBL~")) { return null; }
 
             string[] CommandSplit = Command.Split('~');
             try {
@@ -69,6 +72,7 @@ namespace Igtampe.LBL.Server {
                     case "DOWNLOAD":
                         if(!User.CanExecute(DownloadPLevel)) { return "LBL.N"; }
                         if(CommandSplit.Length != 3) { return "LBL.A"; }
+                        if(!File.Exists(RootDir + CommandSplit[2])) { return "LBL.NOTFOUND"; }
                         return CreateTransfer(LBLTransfer.LBLTransferType.Send,false,CommandSplit[2]).ToString();
                     case "UPLOAD":
                         if(!User.CanExecute(UploadPLevel)) { return "LBL.N"; }
@@ -81,17 +85,23 @@ namespace Igtampe.LBL.Server {
                     case "APPEND":
                         if(!User.CanExecute(UploadPLevel)) { return "LBL.N"; }
                         if(CommandSplit.Length < 4) { return "LBL.A"; }
-                        if(int.TryParse(CommandSplit[2],out int AppendID)) { return "LBL.A"; }
+                        if(!int.TryParse(CommandSplit[2],out int AppendID)) { return "LBL.A"; }
+                        if(!Transfers.ContainsKey(AppendID)) { return "LBL.NOTFOUND"; }
+
                         Transfers[AppendID].Receive(CommandSplit[3]);
                         return "LBL.OK";
                     case "REQUEST":
                         if(!User.CanExecute(DownloadPLevel)) { return "LBL.N"; }
                         if(CommandSplit.Length < 3) { return "LBL.A"; }
-                        if(int.TryParse(CommandSplit[2],out int RequestID)) { return "LBL.A"; }
-                        return Transfers[RequestID].Send();
+                        if(!int.TryParse(CommandSplit[2],out int RequestID)) { return "LBL.A"; }
+                        if(!Transfers.ContainsKey(RequestID)) { return "LBL.NOTFOUND"; }
+
+                        string Line = Transfers[RequestID].Send();
+                        if(string.IsNullOrEmpty(Line)) { return "LBL.EMPTY"; } else { return Line; }
                     case "CLOSE":
                         if(!User.CanExecute(DownloadPLevel)) { return "LBL.N"; }
-                        if(int.TryParse(CommandSplit[2],out int CloseID)) { return "LBL.A"; }
+                        if(!int.TryParse(CommandSplit[2],out int CloseID)) { return "LBL.A"; }
+                        if(!Transfers.ContainsKey(CloseID)) { return "LBL.NOTFOUND"; }
 
                         Transfers[CloseID].Close();
                         Transfers.Remove(CloseID);
@@ -99,13 +109,23 @@ namespace Igtampe.LBL.Server {
                         return "LBL.OK";
 
                     case "DIR":
+                        if(CommandSplit.Length != 3) { return "LBL.A"; }
+
+                        if(!Directory.Exists(RootDir + CommandSplit[2]?.ToString())) { return "LBL.NOTFOUND"; }
+
+                        //Get dirs
+                        string[] Directories = Directory.GetDirectories(RootDir + CommandSplit[2]?.ToString());
+
                         //get files
-                        String[] Files = Directory.GetFiles(RootDir + CommandSplit[2]?.ToString());
+                        string[] Files = Directory.GetFiles(RootDir + CommandSplit[2]?.ToString());
+
+                        if(Files.Length == 0) { return "LBL.EMPTY"; }
 
                         //replace prefix
                         for(int i = 0; i < Files.Length; i++) { Files[i] = Files[i].Replace(RootDir + CommandSplit[2]?.ToString(),""); }
+                        for(int i = 0; i < Directories.Length; i++) { Directories[i] = Directories[i].Replace(RootDir + CommandSplit[2]?.ToString(),""); }
 
-                        return String.Join(",",Files);
+                        return String.Join("~",String.Join(",",Directories),String.Join(",",Files));
 
                     case "PING":
                         return "PONG";
