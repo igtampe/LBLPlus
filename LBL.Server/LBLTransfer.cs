@@ -28,6 +28,9 @@ namespace Igtampe.LBL.Server {
 
         /// <summary>Holds queue of all lines to send.</summary>
         private readonly Queue<string> Lines;
+
+        /// <summary>Amount of lines remaining on this transfer.</summary>
+        public int LineCount => Lines.Count;
         
 
         /// <summary>Creates an LBL Transfer</summary>

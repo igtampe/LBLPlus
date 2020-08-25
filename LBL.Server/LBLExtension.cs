@@ -2,6 +2,7 @@
 using System.IO;
 using Igtampe.Switchboard.Server;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace Igtampe.LBL.Server {
     /// <summary>Holds the LBL+ Extension</summary>
@@ -15,12 +16,15 @@ namespace Igtampe.LBL.Server {
         private int UploadPLevel = 2;
         private string RootDir = "LBL\\";
 
-        private readonly Dictionary<int,LBLTransfer> Transfers;
+        /// <summary>Dictionary of all transfers</summary>
+        private readonly ConcurrentDictionary<int,LBLTransfer> Transfers;
+
+
 
         /// <summary>Creates and initializes an LBL</summary>
         public LBLExtension():base("LBL+","1.0") {
 
-            Transfers = new Dictionary<int,LBLTransfer>();
+            Transfers = new ConcurrentDictionary<int,LBLTransfer>();
 
             //Write default 
             if(!File.Exists("LBL.cfg")) { File.WriteAllLines("LBL.cfg",DefaultSettings); }
@@ -42,7 +46,7 @@ namespace Igtampe.LBL.Server {
         public override string Help() {
             return "LBLPlus Extension Version 1.0\n" +
                 "\n (All Commands have the prefix LBL and are separated by ~) \n\n" +
-                "DOWNLOAD~(FILE)    | Starts a download transfer to retrieve that file. Returns transfer ID.\n" +
+                "DOWNLOAD~(FILE)    | Starts a download transfer to retrieve that file. Returns transfer ID and linecount, separated by a :\n" +
                 "UPLOAD~(FILE)      | Starts an upload transfer to append text to that file. Returns transfer ID \n" +
                 "OVERWRITE~(FILE)   | Starts an upload transfer to overwrite text to that file. Returns transfer ID\n"+
                 "APPEND~(ID)~(LINE) | Appends a line of text to the file on that transfer.\n" +
@@ -53,11 +57,12 @@ namespace Igtampe.LBL.Server {
                 "                   | as \\directory\\\n" +
                 "PING               | Ping the LBLPlus Extension\n" +
                 "\n" +
-                "Results:\n" +
+                "Results:\n\n" +
                 "(text)             | Normal result for some commands\n" +
                 "LBL.OK             | Normal result for some commands\n" +
                 "LBL.EMPTY          | Empty directory/line\n" +
-                "LBL.NOTFOUND       | File/directory/transfer not found." +
+                "LBL.PLSCLOSE       | Reached end of file from download request. Close the request already!\n" +
+                "LBL.NOTFOUND       | File/directory/transfer not found.\n" +
                 "LBL.N              | Not enough permission level to execute.\n" +
                 "LBL.A              | Argument Exception \n" +
                 "LBL.E:(E):(Stack)  | Unhandled exception with stacktrace \n";
@@ -73,15 +78,15 @@ namespace Igtampe.LBL.Server {
                         if(!User.CanExecute(DownloadPLevel)) { return "LBL.N"; }
                         if(CommandSplit.Length != 3) { return "LBL.A"; }
                         if(!File.Exists(RootDir + CommandSplit[2])) { return "LBL.NOTFOUND"; }
-                        return CreateTransfer(LBLTransfer.LBLTransferType.Send,false,CommandSplit[2]).ToString();
+                        return CreateTransfer(LBLTransfer.LBLTransferType.Send,false,CommandSplit[2]);
                     case "UPLOAD":
                         if(!User.CanExecute(UploadPLevel)) { return "LBL.N"; }
                         if(CommandSplit.Length != 3) { return "LBL.A"; }
-                        return CreateTransfer(LBLTransfer.LBLTransferType.Receive,false,CommandSplit[2]).ToString();
+                        return CreateTransfer(LBLTransfer.LBLTransferType.Receive,false,CommandSplit[2]);
                     case "OVERWRITE":
                         if(!User.CanExecute(UploadPLevel)) { return "LBL.N"; }
                         if(CommandSplit.Length != 3) { return "LBL.A"; }
-                        return CreateTransfer(LBLTransfer.LBLTransferType.Receive,true,CommandSplit[2]).ToString();
+                        return CreateTransfer(LBLTransfer.LBLTransferType.Receive,true,CommandSplit[2]);
                     case "APPEND":
                         if(!User.CanExecute(UploadPLevel)) { return "LBL.N"; }
                         if(CommandSplit.Length < 4) { return "LBL.A"; }
@@ -104,7 +109,7 @@ namespace Igtampe.LBL.Server {
                         if(!Transfers.ContainsKey(CloseID)) { return "LBL.NOTFOUND"; }
 
                         Transfers[CloseID].Close();
-                        Transfers.Remove(CloseID);
+                        Transfers.TryRemove(CloseID,out LBLTransfer D);
 
                         return "LBL.OK";
 
@@ -155,14 +160,16 @@ namespace Igtampe.LBL.Server {
         /// <param name="Overwrite"></param>
         /// <param name="Filename"></param>
         /// <returns>ID of the new transfer</returns>
-        public int CreateTransfer(LBLTransfer.LBLTransferType Type,bool Overwrite,String Filename) {
+        public string CreateTransfer(LBLTransfer.LBLTransferType Type,bool Overwrite,String Filename) {
             int ID;
             do { ID = GenerateID(); } while(Transfers.ContainsKey(ID));
 
             LBLTransfer Transfer = new LBLTransfer(ID,RootDir,Filename,Overwrite,Type);
-            Transfers.Add(ID,Transfer);
+            Transfers.TryAdd(ID,Transfer);
 
-            return ID;
+            if(Type == LBLTransfer.LBLTransferType.Send) { return ID.ToString() + ":" + Transfer.LineCount; }
+
+            return ID.ToString();
         }
 
         public override void Settings() {
