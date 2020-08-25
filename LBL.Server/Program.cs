@@ -31,7 +31,7 @@ namespace Igtampe.LBL.Server {
 
         public static List<SwitchboardExtension> GetExtensions() {
             List<SwitchboardExtension> extensions = new List<SwitchboardExtension>();
-            //extensions.Add(new ColloquorExtension());
+            extensions.Add(new LBLExtension());
             return extensions;
         }
 
