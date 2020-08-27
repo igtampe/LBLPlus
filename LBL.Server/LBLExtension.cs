@@ -16,14 +16,14 @@ namespace Igtampe.LBL.Server {
         private string RootDir = "LBL\\";
 
         /// <summary>Dictionary of all transfers</summary>
-        private readonly ConcurrentDictionary<int,LBLTransfer> Transfers;
+        private readonly ConcurrentDictionary<int,LBLServerTransfer> Transfers;
 
 
 
         /// <summary>Creates and initializes an LBL</summary>
         public LBLExtension():base("LBL+","1.0") {
 
-            Transfers = new ConcurrentDictionary<int,LBLTransfer>();
+            Transfers = new ConcurrentDictionary<int,LBLServerTransfer>();
 
             //Write default 
             if(!File.Exists("LBL.cfg")) { File.WriteAllLines("LBL.cfg",DefaultSettings); }
@@ -75,20 +75,22 @@ namespace Igtampe.LBL.Server {
             try {
                 switch(CommandSplit[1].ToUpper()) {
                     case "DOWNLOAD":
-                        if(!User.CanExecute(DownloadPLevel)) { return "LBL.N"; }
+                        //Covering "\.." to avoid having people get out of the root directory.
+                        if(!User.CanExecute(DownloadPLevel)||CommandSplit[2].Contains("\\..")) { return "LBL.N"; }
                         if(CommandSplit.Length != 3) { return "LBL.A"; }
                         if(!File.Exists(RootDir + CommandSplit[2])) { return "LBL.NOTFOUND"; }
-                        return CreateTransfer(LBLTransfer.LBLTransferType.Send,false,CommandSplit[2]);
+                        return CreateTransfer(LBLServerTransfer.LBLTransferType.Send,false,CommandSplit[2]);
                     case "UPLOAD":
-                        if(!User.CanExecute(UploadPLevel)) { return "LBL.N"; }
+                        if(!User.CanExecute(UploadPLevel) || CommandSplit[2].Contains("\\..")) { return "LBL.N"; }
                         if(CommandSplit.Length != 3) { return "LBL.A"; }
                         if(FileBusy(CommandSplit[2],out int BusyID)) { return BusyID.ToString() ; }
-                        return CreateTransfer(LBLTransfer.LBLTransferType.Receive,false,CommandSplit[2]);
+                        return CreateTransfer(LBLServerTransfer.LBLTransferType.Receive,false,CommandSplit[2]);
                     case "OVERWRITE":
-                        if(!User.CanExecute(UploadPLevel)) { return "LBL.N"; }
+                        //Especially important here!!
+                        if(!User.CanExecute(UploadPLevel) || CommandSplit[2].Contains("\\..")) { return "LBL.N"; }
                         if(CommandSplit.Length != 3) { return "LBL.A"; }
                         if(FileBusy(CommandSplit[2],out int doot)) { return "LBL.BUSY"; }
-                        return CreateTransfer(LBLTransfer.LBLTransferType.Receive,true,CommandSplit[2]);
+                        return CreateTransfer(LBLServerTransfer.LBLTransferType.Receive,true,CommandSplit[2]);
                     case "APPEND":
                         if(!User.CanExecute(UploadPLevel)) { return "LBL.N"; }
                         if(CommandSplit.Length < 4) { return "LBL.A"; }
@@ -111,7 +113,7 @@ namespace Igtampe.LBL.Server {
                         if(!Transfers.ContainsKey(CloseID)) { return "LBL.NOTFOUND"; }
 
                         Transfers[CloseID].Close();
-                        Transfers.TryRemove(CloseID,out LBLTransfer D);
+                        Transfers.TryRemove(CloseID,out LBLServerTransfer D);
 
                         return "LBL.OK";
 
@@ -126,7 +128,8 @@ namespace Igtampe.LBL.Server {
                         //get files
                         string[] Files = Directory.GetFiles(RootDir + CommandSplit[2]?.ToString());
 
-                        if(Files.Length == 0) { return "LBL.EMPTY"; }
+                        //empty directories will return just "~"
+                        //if(Files.Length == 0) { return "LBL.EMPTY"; }
 
                         //replace prefix
                         for(int i = 0; i < Files.Length; i++) { Files[i] = Files[i].Replace(RootDir + CommandSplit[2]?.ToString(),""); }
@@ -149,7 +152,7 @@ namespace Igtampe.LBL.Server {
         /// <summary>Verifies the list of transfers to see if this file is busy</summary>
         /// <returns>True if the file is being dealt with by a transfer, false otherwise.</returns>
         private bool FileBusy(string Filename, out int TransferID) {
-            foreach(LBLTransfer transfer in Transfers.Values) {
+            foreach(LBLServerTransfer transfer in Transfers.Values) {
                 if(transfer.Filename.ToUpper() == Filename.ToUpper()) {
                     TransferID = transfer.ID;
                     return true; 
@@ -168,14 +171,14 @@ namespace Igtampe.LBL.Server {
         /// <param name="Overwrite"></param>
         /// <param name="Filename"></param>
         /// <returns>ID of the new transfer</returns>
-        public string CreateTransfer(LBLTransfer.LBLTransferType Type,bool Overwrite,String Filename) {
+        public string CreateTransfer(LBLServerTransfer.LBLTransferType Type,bool Overwrite,String Filename) {
             int ID;
             do { ID = GenerateID(); } while(Transfers.ContainsKey(ID));
 
-            LBLTransfer Transfer = new LBLTransfer(ID,RootDir,Filename,Overwrite,Type);
+            LBLServerTransfer Transfer = new LBLServerTransfer(ID,RootDir,Filename,Overwrite,Type);
             Transfers.TryAdd(ID,Transfer);
 
-            if(Type == LBLTransfer.LBLTransferType.Send) { return ID.ToString() + ":" + Transfer.LineCount; }
+            if(Type == LBLServerTransfer.LBLTransferType.Send) { return ID.ToString() + ":" + Transfer.LineCount; }
 
             return ID.ToString();
         }

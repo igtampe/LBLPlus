@@ -5,7 +5,7 @@ using System.IO;
 namespace Igtampe.LBL.Server {
 
     /// <summary>Contains and handles an LBL Transfer</summary>
-    public class LBLTransfer {
+    public class LBLServerTransfer {
 
         /// <summary>ID of this transfer</summary>
         public int ID { get; protected set; }
@@ -38,7 +38,7 @@ namespace Igtampe.LBL.Server {
         /// <param name="RootDir">Root directory of this LBL server (C:\LBL\)</param>
         /// <param name="Filename">Filename of this file (Transfers\TheSecretPassword.txt)</param>
         /// <param name="Type">Type of this transfer</param>
-        public LBLTransfer(int ID, string RootDir, string Filename, bool Overwrite, LBLTransferType Type) {
+        public LBLServerTransfer(int ID, string RootDir, string Filename, bool Overwrite, LBLTransferType Type) {
             this.ID = ID;
             this.RootDir = RootDir;
             this.Filename = Filename;
@@ -104,7 +104,7 @@ namespace Igtampe.LBL.Server {
         public override string ToString() { return Filename + " (" + ID + ")"; }
         public override int GetHashCode() { return ID; }
         public override bool Equals(object obj) {
-            LBLTransfer OtherTransfer = obj as LBLTransfer;
+            LBLServerTransfer OtherTransfer = obj as LBLServerTransfer;
             string OtherFilename = obj.ToString();
 
             return OtherTransfer?.ID == ID || OtherFilename.ToUpper() == Filename.ToUpper() || OtherFilename == ID.ToString();

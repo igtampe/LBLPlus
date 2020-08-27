@@ -59,7 +59,7 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="LBLExtension.cs" />
-    <Compile Include="LBLTransfer.cs" />
+    <Compile Include="LBLServerTransfer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\SettingsForm.resx">
