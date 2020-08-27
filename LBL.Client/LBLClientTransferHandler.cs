@@ -7,7 +7,20 @@ namespace Igtampe.LBL.Client {
     public class LBLClientTransferHandler {
 
         /// <summary>Indicates whether this transfer handler is busy.</summary>
-        public bool Busy { get; protected set; }
+        private bool busy;
+
+        public bool Busy {
+            get { return busy; }
+            set {
+                busy = value;
+
+                //if we were just made not busy, cancellations should not be pending.
+                if(!busy) { CancellationPending = false; }
+            }
+        }
+
+
+        private bool CancellationPending = false;
 
         /// <summary>Progress for the current operation</summary>
         public double Progress { get; private set; }
@@ -15,12 +28,17 @@ namespace Igtampe.LBL.Client {
         /// <summary>Connection used for transfers</summary>
         protected LBLConnection Connection;
 
+        /// <summary>Creates an LBLClientTransferHandler</summary>
+        /// <param name="Connection"></param>
         public LBLClientTransferHandler(LBLConnection Connection) {
             this.Connection = Connection;
             Progress = 0.0;
             Busy = false;
         }
-
+        
+        /// <summary>Downloads a file from the server</summary>
+        /// <param name="RemoteFilename"></param>
+        /// <param name="LocalFilename"></param>
         public void Download(string RemoteFilename, string LocalFilename) {
 
             if(Busy) { throw new InvalidOperationException("Transfer handler is busy!"); }
@@ -37,6 +55,8 @@ namespace Igtampe.LBL.Client {
 
             //Actually download this cosa
             for(int i = 0; i == Linecount; i++) {
+                if(CancellationPending) {Connection.Close(ID); busy = false; return; }
+
                 Progress = (i+0.0) / (Linecount+0.0); //gotta make sure that the progress is updated
                 try { Lines.Add(Connection.Request(ID)); } 
                 catch(EndOfStreamException) { break; } //In case we go over for some reason
@@ -54,6 +74,10 @@ namespace Igtampe.LBL.Client {
             Busy = false;
         }
 
+        /// <summary>Uploads a file to the server</summary>
+        /// <param name="RemoteFilename"></param>
+        /// <param name="LocalFilename"></param>
+        /// <param name="Overwrite"></param>
         public void Upload(string RemoteFilename,string LocalFilename,bool Overwrite) {
 
             if(Busy) { throw new InvalidOperationException("Transfer handler is busy!"); }
@@ -69,6 +93,8 @@ namespace Igtampe.LBL.Client {
 
             //Actually Upload the cosa
             foreach(string Line in AllLines) {
+                if(CancellationPending) { Connection.Close(ID); busy = false;  return; }
+
                 Progress = (i + 0.0) / (Linecount + 0.0); //gotta make sure that the progress is updated
                 Connection.Append(ID,Line);
                 i++;
@@ -91,7 +117,9 @@ namespace Igtampe.LBL.Client {
             Upload(Split[0],Split[1],bool.Parse(Split[2]));
         }
 
-
+        /// <summary>Starts an Asynchronous Download Transfer</summary>
+        /// <param name="RemoteFilename"></param>
+        /// <param name="LocalFilename"></param>
         public void DownloadAsync(string RemoteFilename,string LocalFilename) {
             if(Busy) { throw new InvalidOperationException("Transfer handler is busy!"); }
             Busy = true;
@@ -99,13 +127,18 @@ namespace Igtampe.LBL.Client {
             DownloadThread.Start(RemoteFilename+"|"+LocalFilename);
         }
 
+        /// <summary>Starts an Asynchronous Upload Transfer</summary>
+        /// <param name="RemoteFilename"></param>
+        /// <param name="LocalFilename"></param>
+        /// <param name="Overwrite"></param>
         public void UploadAsync(string RemoteFilename,string LocalFilename,bool Overwrite) {
             if(Busy) { throw new InvalidOperationException("Transfer handler is busy!"); }
             Busy = true;
-            Thread UploadThread = new Thread(Download);
+            Thread UploadThread = new Thread(Upload);
             UploadThread.Start(RemoteFilename + "|" + LocalFilename + "|" + Overwrite.ToString());
         }
 
+        public void Cancel() {if(Busy) { CancellationPending = true; }}
 
 
     }
