@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LBL.Client", "LBL.Client\LB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LBL.Server", "LBL.Server\LBL.Server.csproj", "{B1DDFC4F-09ED-47E7-986E-19DDED2A36BB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LBL.Console", "LBL.Console\LBL.Console.csproj", "{EA3F313A-ECC6-4EC1-AD07-4BFFF1AC6C9B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LBL.GUI", "LBL.GUI\LBL.GUI.csproj", "{A1FBE53F-1E7D-4E97-AADF-935909CEB2BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{B1DDFC4F-09ED-47E7-986E-19DDED2A36BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B1DDFC4F-09ED-47E7-986E-19DDED2A36BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B1DDFC4F-09ED-47E7-986E-19DDED2A36BB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EA3F313A-ECC6-4EC1-AD07-4BFFF1AC6C9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EA3F313A-ECC6-4EC1-AD07-4BFFF1AC6C9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EA3F313A-ECC6-4EC1-AD07-4BFFF1AC6C9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EA3F313A-ECC6-4EC1-AD07-4BFFF1AC6C9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1FBE53F-1E7D-4E97-AADF-935909CEB2BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1FBE53F-1E7D-4E97-AADF-935909CEB2BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1FBE53F-1E7D-4E97-AADF-935909CEB2BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1FBE53F-1E7D-4E97-AADF-935909CEB2BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
