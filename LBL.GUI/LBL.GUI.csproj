@@ -36,6 +36,9 @@
     <ApplicationIcon>LBL Standalone.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Switchboard">
+      <HintPath>A:\Downloads\Programs\TestPrograms\Switchboard\Switchboard.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

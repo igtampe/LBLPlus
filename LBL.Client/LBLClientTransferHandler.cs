@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Authentication;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace Igtampe.LBL.Client {
     public class LBLClientTransferHandler {
 
-        /// <summary>Indicates whether this transfer handler is busy.</summary>
         private bool busy;
 
+        /// <summary>Indicates whether this transfer handler is busy.</summary>
         public bool Busy {
             get { return busy; }
             set {
@@ -19,7 +21,7 @@ namespace Igtampe.LBL.Client {
             }
         }
 
-
+        /// <summary>Indicates when a cancellation is pending</summary>
         private bool CancellationPending = false;
 
         /// <summary>Progress for the current operation</summary>
@@ -110,11 +112,25 @@ namespace Igtampe.LBL.Client {
 
         private void Download(object obj) {
             string[] Split = obj.ToString().Split('|');
-            Download(Split[0],Split[1]);
+            try { Download(Split[0],Split[1]); } 
+            catch(AuthenticationException) { MessageBox.Show("User has no permission to download files","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); }
+            catch(InvalidOperationException) { MessageBox.Show("Connection busy or not connected","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); }
+            catch(FileNotFoundException) { MessageBox.Show("File not found.","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); }
+            catch(IOException) { MessageBox.Show("File is Busy","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); }
+            catch(TimeoutException) { MessageBox.Show("Connection timed out! Probably disconnect and reconnect.","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); } 
+            catch(Exception E) { MessageBox.Show("Unhandled Exception: \n\n" + E.Message,"LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); } 
+            finally { Busy = false; }
         }
         private void Upload(object obj) {
             string[] Split = obj.ToString().Split('|');
-            Upload(Split[0],Split[1],bool.Parse(Split[2]));
+            try { Upload(Split[0],Split[1],bool.Parse(Split[2])); }
+            catch(AuthenticationException) { MessageBox.Show("User has no permission to upload files","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); }
+            catch(InvalidOperationException) { MessageBox.Show("Connection busy or not connected","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); }
+            catch(FileNotFoundException) { MessageBox.Show("File not found.","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); }
+            catch(IOException) { MessageBox.Show("File is Busy","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); }
+            catch(TimeoutException) { MessageBox.Show("Connection timed out! Probably disconnect and reconnect.","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); } 
+            catch(Exception E) { MessageBox.Show("Unhandled Exception: \n\n" + E.Message,"LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); } 
+            finally { Busy = false; }
         }
 
         /// <summary>Starts an Asynchronous Download Transfer</summary>

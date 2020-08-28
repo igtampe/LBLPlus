@@ -30,11 +30,12 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.LoginBox = new System.Windows.Forms.GroupBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.PasswordTXB = new System.Windows.Forms.TextBox();
+            this.UsernameTXB = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.LoginButton = new System.Windows.Forms.Button();
+            this.LoginBW = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.ServerGroupBox.SuspendLayout();
             this.LoginBox.SuspendLayout();
@@ -99,8 +100,8 @@
             // 
             // LoginBox
             // 
-            this.LoginBox.Controls.Add(this.textBox1);
-            this.LoginBox.Controls.Add(this.textBox2);
+            this.LoginBox.Controls.Add(this.PasswordTXB);
+            this.LoginBox.Controls.Add(this.UsernameTXB);
             this.LoginBox.Controls.Add(this.label3);
             this.LoginBox.Controls.Add(this.label4);
             this.LoginBox.Location = new System.Drawing.Point(312, 12);
@@ -110,21 +111,20 @@
             this.LoginBox.TabStop = false;
             this.LoginBox.Text = "Login";
             // 
-            // textBox1
+            // PasswordTXB
             // 
-            this.textBox1.Location = new System.Drawing.Point(81, 49);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 3;
-            this.textBox1.Text = "909";
+            this.PasswordTXB.Location = new System.Drawing.Point(81, 49);
+            this.PasswordTXB.Name = "PasswordTXB";
+            this.PasswordTXB.PasswordChar = '*';
+            this.PasswordTXB.Size = new System.Drawing.Size(100, 20);
+            this.PasswordTXB.TabIndex = 3;
             // 
-            // textBox2
+            // UsernameTXB
             // 
-            this.textBox2.Location = new System.Drawing.Point(81, 23);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
-            this.textBox2.TabIndex = 2;
-            this.textBox2.Text = "127.0.0.1";
+            this.UsernameTXB.Location = new System.Drawing.Point(81, 23);
+            this.UsernameTXB.Name = "UsernameTXB";
+            this.UsernameTXB.Size = new System.Drawing.Size(100, 20);
+            this.UsernameTXB.TabIndex = 2;
             // 
             // label3
             // 
@@ -153,6 +153,10 @@
             this.LoginButton.Text = "Login";
             this.LoginButton.UseVisualStyleBackColor = true;
             this.LoginButton.Click += new System.EventHandler(this.LoginButton_Click);
+            // 
+            // LoginBW
+            // 
+            this.LoginBW.DoWork += new System.ComponentModel.DoWorkEventHandler(this.LoginBW_DoWork);
             // 
             // LoginForm
             // 
@@ -186,11 +190,12 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox LoginBox;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox PasswordTXB;
+        private System.Windows.Forms.TextBox UsernameTXB;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button LoginButton;
+        private System.ComponentModel.BackgroundWorker LoginBW;
     }
 }
 
