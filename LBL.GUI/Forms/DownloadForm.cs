@@ -21,6 +21,7 @@ namespace Igtampe.LBL.GUI.Forms {
             this.RemoteFile = RemoteFile;
             Image.Image = Resources.FileIn;
 
+            Text = "Downloading " + RemoteFile;
             CancelBTN.Enabled = true;
 
             MainProgBar.Style = ProgressBarStyle.Continuous;
@@ -48,7 +49,7 @@ namespace Igtampe.LBL.GUI.Forms {
         }
 
         protected override void MainBWorker_ProgressChanged(object sender,ProgressChangedEventArgs e) {
-            SubtitleLabel.Text = RemoteFile + " " + TransferHandler.LinesProcessed + "/" + TransferHandler.LinesTotal + "Lines sent (" + e.ProgressPercentage + "%)";
+            SubtitleLabel.Text = RemoteFile + " " + TransferHandler.LinesProcessed + "/" + TransferHandler.LinesTotal + " Lines processed (" + e.ProgressPercentage + "%)";
             MainProgBar.Value = e.ProgressPercentage;
         }
 

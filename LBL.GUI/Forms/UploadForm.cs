@@ -11,7 +11,11 @@ namespace Igtampe.LBL.GUI.Forms {
 
         public UploadForm(string RemoteFile,string LocalFile,bool Overwrite,LBLConnection Connection):base(RemoteFile,LocalFile,Connection) {
 
+            HeaderLabel.Text = "Uploading File";
+
+
             this.Overwrite = Overwrite;
+            Text = "Uploading " + LocalFile;
             Image.Image = Resources.FileOut;
         }
 

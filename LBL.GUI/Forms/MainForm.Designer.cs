@@ -106,9 +106,11 @@
             this.FilesListBox.FormattingEnabled = true;
             this.FilesListBox.Location = new System.Drawing.Point(6, 19);
             this.FilesListBox.Name = "FilesListBox";
+            this.FilesListBox.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.FilesListBox.Size = new System.Drawing.Size(246, 225);
             this.FilesListBox.TabIndex = 1;
             this.FilesListBox.SelectedIndexChanged += new System.EventHandler(this.FilesListBox_SelectedIndexChanged);
+            this.FilesListBox.DoubleClick += new System.EventHandler(this.FilesListBox_DoubleClick);
             // 
             // DownloadBTN
             // 

@@ -98,7 +98,7 @@ namespace Igtampe.LBL.GUI.Forms {
                 }
             }
 
-
+            UpdateDirectory();
         }
 
         private void DownloadBTN_Click(object sender,EventArgs e) {
@@ -200,5 +200,7 @@ namespace Igtampe.LBL.GUI.Forms {
         }
 
         private void DisconnectBTN_Click(object sender,EventArgs e) {Close();}
+
+        private void FilesListBox_DoubleClick(object sender,EventArgs e) { DownloadBTN_Click(sender,e);}
     }
 }
