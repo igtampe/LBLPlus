@@ -7,6 +7,8 @@ namespace Igtampe.LBL.Server {
     /// <summary>Contains and handles an LBL Transfer</summary>
     public class LBLServerTransfer {
 
+        //------------------------------[Variables]------------------------------
+
         /// <summary>ID of this transfer</summary>
         public int ID { get; protected set; }
 
@@ -31,7 +33,8 @@ namespace Igtampe.LBL.Server {
 
         /// <summary>Amount of lines remaining on this transfer.</summary>
         public int LineCount => Lines.Count;
-        
+
+        //------------------------------[Constructor]------------------------------
 
         /// <summary>Creates an LBL Transfer</summary>
         /// <param name="ID">ID of this transfer</param>
@@ -59,7 +62,9 @@ namespace Igtampe.LBL.Server {
             }
         }
 
-        /// <summary>Adds specified text to the file.</summary>
+        //------------------------------[Functions]------------------------------
+
+        /// <summary>Adds specified text to the file this transfer is tied to.</summary>
         /// <param name="text"></param>
         public void Receive(string text) {
             if(Type == LBLTransferType.Send) { throw new InvalidOperationException("LBL Transfer isn't set to receive mode"); }
@@ -73,6 +78,8 @@ namespace Igtampe.LBL.Server {
             Busy = false;
         }
 
+        /// <summary>Gets the next line for a client</summary>
+        /// <returns>The next line on the file, or LBL.PLSCLOSE if there are no more lines</returns>
         public string Send() {
             if(Type == LBLTransferType.Receive) { throw new InvalidOperationException("LBL Transfer isn't set to send mode"); }
             
@@ -101,8 +108,19 @@ namespace Igtampe.LBL.Server {
             Lines?.Clear();
         }
 
+        //------------------------------[Object Functions]------------------------------
+
+        /// <summary>Turns this transfer to a string</summary>
+        /// <returns>Filename (ID)</returns>
         public override string ToString() { return Filename + " (" + ID + ")"; }
+
+        /// <summary>Gets a HashCode for this connection</summary>
+        /// <returns>The ID</returns>
         public override int GetHashCode() { return ID; }
+
+        /// <summary>Finds out if this connection and another are the same.</summary>
+        /// <param name="obj">obj to compare</param>
+        /// <returns>True if the ID of this transfer equals the other's, or if the object is a string and the filename is the same, or if the object is a string or integer if its the same to the ID</returns>
         public override bool Equals(object obj) {
             LBLServerTransfer OtherTransfer = obj as LBLServerTransfer;
             string OtherFilename = obj.ToString();

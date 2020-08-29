@@ -4,8 +4,11 @@ using Igtampe.Switchboard.Server;
 using System.Collections.Concurrent;
 
 namespace Igtampe.LBL.Server {
+
     /// <summary>Holds the LBL+ Extension</summary>
     public class LBLExtension:SwitchboardExtension {
+
+        //------------------------------[Variables]------------------------------
 
         /// <summary>Default settings with 0 as permission level, and the LBL Folder in the current directory as the root directory for filesharing </summary>
         private static readonly string[] DefaultSettings = { "0~2~LBL\\" };
@@ -18,11 +21,10 @@ namespace Igtampe.LBL.Server {
         /// <summary>Dictionary of all transfers</summary>
         private readonly ConcurrentDictionary<int,LBLServerTransfer> Transfers;
 
-
+        //------------------------------[Constructor]------------------------------
 
         /// <summary>Creates and initializes an LBL</summary>
         public LBLExtension():base("LBL+","1.0") {
-
             Transfers = new ConcurrentDictionary<int,LBLServerTransfer>();
 
             //Write default 
@@ -38,9 +40,9 @@ namespace Igtampe.LBL.Server {
                 if(!Directory.Exists(RootDir)) {Directory.CreateDirectory(RootDir);}
 
             } catch(Exception e) { Console.WriteLine(e.Message + "\n\n" + e.StackTrace); }
-
-
         }
+
+        //------------------------------[Switchboard Functions]------------------------------
 
         public override string Help() {
             return "LBLPlus Extension Version 1.0\n" +
@@ -149,6 +151,8 @@ namespace Igtampe.LBL.Server {
             }
         }
 
+        //------------------------------[Internal Functions]------------------------------
+
         /// <summary>Verifies the list of transfers to see if this file is busy</summary>
         /// <returns>True if the file is being dealt with by a transfer, false otherwise.</returns>
         private bool FileBusy(string Filename, out int TransferID) {
@@ -173,15 +177,18 @@ namespace Igtampe.LBL.Server {
         /// <returns>ID of the new transfer</returns>
         public string CreateTransfer(LBLServerTransfer.LBLTransferType Type,bool Overwrite,String Filename) {
             int ID;
-            do { ID = GenerateID(); } while(Transfers.ContainsKey(ID));
+            do { ID = GenerateID(); } while(Transfers.ContainsKey(ID)); //Generate IDs until there's an ID that isn't there yet
 
+            //Create the actual transfer and add it to the map
             LBLServerTransfer Transfer = new LBLServerTransfer(ID,RootDir,Filename,Overwrite,Type);
             Transfers.TryAdd(ID,Transfer);
 
+            //Return the needed info
             if(Type == LBLServerTransfer.LBLTransferType.Send) { return ID.ToString() + ":" + Transfer.LineCount; }
-
             return ID.ToString();
         }
+
+        //------------------------------[Settings Functions]------------------------------
 
         public override void Settings() {
             Forms.SettingsForm Form = new Forms.SettingsForm(DownloadPLevel,UploadPLevel,RootDir);
@@ -199,12 +206,9 @@ namespace Igtampe.LBL.Server {
 
         /// <summary>Saves LBL's Settings.</summary>
         public void SaveSettings() {
-
             File.Delete("LBL.CFG");
             File.WriteAllText("LBL.cfg",DownloadPLevel.ToString() +"~" + UploadPLevel.ToString() + "~"+ RootDir);
-
         }
-
 
     }
 }

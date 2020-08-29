@@ -1,6 +1,11 @@
 ﻿using System;
 
 namespace Igtampe.LBL.Client {
+
+    /// <summary>
+    /// Holds an LBL Directory<br></br>
+    /// <br></br>
+    /// essentially comprised of two arrays holding the names of folders and the names of files in the directory.</summary>
     public class LBLDirectory {
 
         /// <summary>Array of all folders in this directory</summary>

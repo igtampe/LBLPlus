@@ -76,7 +76,6 @@
             this.FolderListBox.Name = "FolderListBox";
             this.FolderListBox.Size = new System.Drawing.Size(163, 225);
             this.FolderListBox.TabIndex = 1;
-            this.FolderListBox.SelectedIndexChanged += new System.EventHandler(this.FolderListbox_SelectedIndexChanged);
             this.FolderListBox.DoubleClick += new System.EventHandler(this.FolderListBox_DoubleClick);
             // 
             // FileBox

@@ -6,8 +6,13 @@ using System.Threading;
 using System.Windows.Forms;
 
 namespace Igtampe.LBL.Client {
+
+    /// <summary>Transfer Handler that can Download/Upload files via LBL if given an LBL Connection.</summary>
     public class LBLClientTransferHandler {
 
+        //------------------------------[Variables]------------------------------
+
+        /// <summary>private property used to store Busy</summary>
         private bool busy;
 
         /// <summary>Indicates whether this transfer handler is busy.</summary>
@@ -27,11 +32,16 @@ namespace Igtampe.LBL.Client {
         /// <summary>Progress for the current operation</summary>
         public double Progress { get; private set; }
 
+        /// <summary>Lines Processed (sent or received depending on the current operation)</summary>
         public int LinesProcessed { get; private set; } = 0;
+        
+        /// <summary>Lines to be processed in total (Sent or received depending on the current operation)</summary>
         public int LinesTotal { get; private set; } = 0;
 
         /// <summary>Connection used for transfers</summary>
         protected LBLConnection Connection;
+
+        //------------------------------[Constructor]------------------------------
 
         /// <summary>Creates an LBLClientTransferHandler</summary>
         /// <param name="Connection"></param>
@@ -40,7 +50,9 @@ namespace Igtampe.LBL.Client {
             Progress = 0.0;
             Busy = false;
         }
-        
+
+        //------------------------------[Operations]------------------------------
+
         /// <summary>Downloads a file from the server</summary>
         /// <param name="RemoteFilename"></param>
         /// <param name="LocalFilename"></param>
@@ -121,6 +133,9 @@ namespace Igtampe.LBL.Client {
 
         }
 
+        //------------------------------[Async Thread Handlers]------------------------------
+
+        /// <summary>Starts/handles Async exceptions for download</summary>
         private void Download(object obj) {
             string[] Split = obj.ToString().Split('|');
             busy = false;
@@ -133,6 +148,9 @@ namespace Igtampe.LBL.Client {
             catch(Exception E) { MessageBox.Show("Unhandled Exception: \n\n" + E.Message,"LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); } 
             finally { Busy = false; }
         }
+
+        /// <summary>Starts/handles async exceptions for upload</summary>
+        /// <param name="obj"></param>
         private void Upload(object obj) {
             string[] Split = obj.ToString().Split('|');
             busy = false;
@@ -145,6 +163,8 @@ namespace Igtampe.LBL.Client {
             catch(Exception E) { MessageBox.Show("Unhandled Exception: \n\n" + E.Message,"LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); } 
             finally { Busy = false; }
         }
+
+        //------------------------------[Async Thread starters]------------------------------
 
         /// <summary>Starts an Asynchronous Download Transfer</summary>
         /// <param name="RemoteFilename"></param>
@@ -167,6 +187,9 @@ namespace Igtampe.LBL.Client {
             UploadThread.Start(RemoteFilename + "|" + LocalFilename + "|" + Overwrite.ToString());
         }
 
+        //------------------------------[Cancel]------------------------------
+
+        /// <summary>Sends a cancel notice to a currently running async operation</summary>
         public void Cancel() {if(Busy) { CancellationPending = true; }}
 
 

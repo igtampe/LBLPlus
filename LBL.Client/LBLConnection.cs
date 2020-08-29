@@ -5,13 +5,21 @@ using Igtampe.Switchboard.Common;
 
 namespace Igtampe.LBL.Client {
 
+    /// <summary>LBLConnection that handles LBL internal commands and exceptions</summary>
     public class LBLConnection:SwitchboardClient {
 
+        //------------------------------[Constructor]------------------------------
+
+        /// <summary>Creates an LBL Connection, but does not start it.</summary>
+        /// <param name="IP"></param>
+        /// <param name="Port"></param>
         public LBLConnection(String IP, int Port):base(IP,Port) {}
+
+        //------------------------------[LBL Functions]------------------------------
 
         /// <summary>Returns a directory of all subdirectories and files in the server at the specified subdirectory</summary>
         /// <param name="Subdirectory"></param>
-        /// <returns></returns>
+        /// <returns>An LBL Directory object with all files/folders in this directory</returns>
         public LBLDirectory GetDirectory(string Subdirectory) {return new LBLDirectory(LBLSendReceive("DIR~" + Subdirectory));}
 
         /// <summary>Opens a download transfer on the server to download the specified file</summary>
@@ -60,6 +68,8 @@ namespace Igtampe.LBL.Client {
             catch(InvalidOperationException) {return false;} 
             catch(Exception) { throw; }
         }
+
+        //------------------------------[Internal Send Receive]------------------------------
 
         /// <summary>Handles LBL Send-Receive calls, and handles potential errors</summary>
         /// <param name="Send"></param>

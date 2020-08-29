@@ -4,20 +4,38 @@ using Igtampe.LBL.Client;
 using Igtampe.Switchboard.Common;
 
 namespace Igtampe.LBL.GUI.Forms {
+
+    /// <summary>Login Form that starts the program</summary>
     public partial class LoginForm:Form {
 
+        //------------------------------[Variables]------------------------------
+
+        /// <summary>Form that shows up when its time to login and contact the server</summary>
         private ServerContactForm Form;
+
+        /// <summary>Connection that will be passed on to basically everything</summary>
         private LBLConnection Connection;
+
+        /// <summary>Variable that'll hold the result for the BWorker</summary>
         private SwitchboardClient.LoginResult Result;
 
+        /// <summary>Username holder for the background worker</summary>
         private string Username;
+
+        /// <summary>Password holder for the Background Worker</summary>
         private string Password;
 
+        //------------------------------[Constructor]------------------------------
+
+        /// <summary>Constructs the LoginForm and starts the show!</summary>
         public LoginForm() {
             InitializeComponent();
             Icon = Resources.LBL_Standalone;
         }
 
+        //------------------------------[Button]------------------------------
+
+        /// <summary>Starts a Login Request</summary>
         private void LoginButton_Click(object sender,System.EventArgs e) {
             Enabled = false;
             Form = new ServerContactForm("Logging in to the server","Please wait...");
@@ -32,11 +50,15 @@ namespace Igtampe.LBL.GUI.Forms {
 
         }
 
+        //------------------------------[Background Worker]------------------------------
+
+        /// <summary>Connects and logs in</summary>
         private void LoginBW_DoWork(object sender,System.ComponentModel.DoWorkEventArgs e) {
             Result = SwitchboardClient.LoginResult.INVALID;
             if(Connection.Connect()) {Result = Connection.Login(Username,Password);}
         }
 
+        /// <summary>Interprets the results from the background worker</summary>
         private void LoginBW_RunWorkerCompleted(object sender,System.ComponentModel.RunWorkerCompletedEventArgs e) {
             Form.Close();
             Enabled = true;

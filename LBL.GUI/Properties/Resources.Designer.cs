@@ -63,16 +63,6 @@ namespace Igtampe.LBL.GUI.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap CertificationCheck {
-            get {
-                object obj = ResourceManager.GetObject("CertificationCheck", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap FileIn {
             get {
                 object obj = ResourceManager.GetObject("FileIn", resourceCulture);
