@@ -16,10 +16,10 @@ namespace Igtampe.LBL.GUI.Forms {
         //------------------------------[Variables]------------------------------
 
         /// <summary>Connection that runs the show</summary>
-        private LBLConnection Connection;
+        private readonly LBLConnection Connection;
         
         /// <summary>Stack that represents the path the server is in</summary>
-        private Stack<String> Path;
+        private readonly Stack<String> Path;
 
         /// <summary>Path as string for access from the server (and display locally)</summary>
         private String PathAsString;
