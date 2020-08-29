@@ -27,16 +27,59 @@ namespace Igtampe.LBL.GUI.Forms {
 
             Username = UsernameTXB.Text;
             Password = PasswordTXB.Text;
+            Form.Show();
             LoginBW.RunWorkerAsync();
 
         }
 
         private void LoginBW_DoWork(object sender,System.ComponentModel.DoWorkEventArgs e) {
+            Result = SwitchboardClient.LoginResult.INVALID;
             if(Connection.Connect()) {Result = Connection.Login(Username,Password);}
         }
 
+        private void LoginBW_RunWorkerCompleted(object sender,System.ComponentModel.RunWorkerCompletedEventArgs e) {
+            Form.Close();
+            Enabled = true;
 
+            //Check if we're connected
+            if(!Connection.Connected) {
+                MessageBox.Show("Could not connect to the server!","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                return;
+            }
 
+            //Switch on login result.
+            switch(Result) {
+                case SwitchboardClient.LoginResult.SUCCESS:
+                    //We've successfully connected. Launch the de-esta cosa
+
+                    //Launch the mainform
+                    MainForm Haha = new MainForm(Connection);
+                    Hide();
+                    Haha.ShowDialog();
+                    Show();
+                    Connection.Close();
+
+                    break;
+                case SwitchboardClient.LoginResult.INVALID:
+                    Connection.Close();
+                    MessageBox.Show("Invalid Login Credentials","LBL",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                    break;
+                case SwitchboardClient.LoginResult.ALREADY:
+                    Connection.Close();
+                    //These shouldn't happen
+                    MessageBox.Show("?","This isn't supposed to happen",MessageBoxButtons.OK,MessageBoxIcon.Question);
+                    break;
+                case SwitchboardClient.LoginResult.OTHERLOCALE:
+                    Connection.Close();
+                    MessageBox.Show("Already logged in on another client.","LBL",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+                    break;
+                default:
+                    Connection.Close();
+                    MessageBox.Show("?","This isn't supposed to happen",MessageBoxButtons.OK,MessageBoxIcon.Question);
+                    break;
+            }
+
+        }
     }
 }
  

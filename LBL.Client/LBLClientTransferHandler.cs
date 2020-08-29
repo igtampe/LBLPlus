@@ -27,6 +27,9 @@ namespace Igtampe.LBL.Client {
         /// <summary>Progress for the current operation</summary>
         public double Progress { get; private set; }
 
+        public int LinesProcessed { get; private set; } = 0;
+        public int LinesTotal { get; private set; } = 0;
+
         /// <summary>Connection used for transfers</summary>
         protected LBLConnection Connection;
 
@@ -55,9 +58,13 @@ namespace Igtampe.LBL.Client {
             int ID = DownloadInfo[0];
             int Linecount = DownloadInfo[1];
 
+            LinesTotal = Linecount; ;
+
             //Actually download this cosa
-            for(int i = 0; i == Linecount; i++) {
+            for( int i = 0; i < Linecount; i++) {
                 if(CancellationPending) {Connection.Close(ID); busy = false; return; }
+
+                LinesProcessed = i;
 
                 Progress = (i+0.0) / (Linecount+0.0); //gotta make sure that the progress is updated
                 try { Lines.Add(Connection.Request(ID)); } 
@@ -93,9 +100,13 @@ namespace Igtampe.LBL.Client {
             int Linecount = AllLines.Length;
             int i = 0;
 
+            LinesTotal = Linecount;
+
             //Actually Upload the cosa
             foreach(string Line in AllLines) {
                 if(CancellationPending) { Connection.Close(ID); busy = false;  return; }
+
+                LinesProcessed = i;
 
                 Progress = (i + 0.0) / (Linecount + 0.0); //gotta make sure that the progress is updated
                 Connection.Append(ID,Line);
@@ -112,6 +123,7 @@ namespace Igtampe.LBL.Client {
 
         private void Download(object obj) {
             string[] Split = obj.ToString().Split('|');
+            busy = false;
             try { Download(Split[0],Split[1]); } 
             catch(AuthenticationException) { MessageBox.Show("User has no permission to download files","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); }
             catch(InvalidOperationException) { MessageBox.Show("Connection busy or not connected","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); }
@@ -123,6 +135,7 @@ namespace Igtampe.LBL.Client {
         }
         private void Upload(object obj) {
             string[] Split = obj.ToString().Split('|');
+            busy = false;
             try { Upload(Split[0],Split[1],bool.Parse(Split[2])); }
             catch(AuthenticationException) { MessageBox.Show("User has no permission to upload files","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); }
             catch(InvalidOperationException) { MessageBox.Show("Connection busy or not connected","LBL",MessageBoxButtons.OK,MessageBoxIcon.Error); }

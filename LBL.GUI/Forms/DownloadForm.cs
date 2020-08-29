@@ -20,6 +20,10 @@ namespace Igtampe.LBL.GUI.Forms {
             this.LocalFile = LocalFile;
             this.RemoteFile = RemoteFile;
             Image.Image = Resources.FileIn;
+
+            CancelBTN.Enabled = true;
+
+            MainProgBar.Style = ProgressBarStyle.Continuous;
         }
 
         protected override void CancelBTN_Click(object sender,EventArgs e) {Close();}
@@ -44,7 +48,7 @@ namespace Igtampe.LBL.GUI.Forms {
         }
 
         protected override void MainBWorker_ProgressChanged(object sender,ProgressChangedEventArgs e) {
-            SubtitleLabel.Text = RemoteFile + " (" + e.ProgressPercentage + "%)";
+            SubtitleLabel.Text = RemoteFile + " " + TransferHandler.LinesProcessed + "/" + TransferHandler.LinesTotal + "Lines sent (" + e.ProgressPercentage + "%)";
             MainProgBar.Value = e.ProgressPercentage;
         }
 

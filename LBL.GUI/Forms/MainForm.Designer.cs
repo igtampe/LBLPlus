@@ -32,6 +32,7 @@
             this.FilesListBox = new System.Windows.Forms.ListBox();
             this.DownloadBTN = new System.Windows.Forms.Button();
             this.DisconnectBTN = new System.Windows.Forms.Button();
+            this.UpdateDirectoryBW = new System.ComponentModel.BackgroundWorker();
             this.FolderBox.SuspendLayout();
             this.FileBox.SuspendLayout();
             this.SuspendLayout();
@@ -127,6 +128,12 @@
             this.DisconnectBTN.TabIndex = 3;
             this.DisconnectBTN.Text = "Disconnect";
             this.DisconnectBTN.UseVisualStyleBackColor = true;
+            this.DisconnectBTN.Click += new System.EventHandler(this.DisconnectBTN_Click);
+            // 
+            // UpdateDirectoryBW
+            // 
+            this.UpdateDirectoryBW.DoWork += new System.ComponentModel.DoWorkEventHandler(this.UpdateDirectoryBW_DoWork);
+            this.UpdateDirectoryBW.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.UpdateDirectoryBW_RunWorkerCompleted);
             // 
             // MainForm
             // 
@@ -136,9 +143,13 @@
             this.Controls.Add(this.DisconnectBTN);
             this.Controls.Add(this.FileBox);
             this.Controls.Add(this.FolderBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximumSize = new System.Drawing.Size(477, 370);
+            this.MinimumSize = new System.Drawing.Size(477, 370);
             this.Name = "MainForm";
-            this.Text = "MainForm";
-            this.Load += new System.EventHandler(this.MainForm_Load);
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "LBL Browser [LBL:\\\\127.0.0.1\\Hello\\Folder\\]";
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.FolderBox.ResumeLayout(false);
             this.FileBox.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -156,5 +167,6 @@
         private System.Windows.Forms.Button UpLevelBTN;
         private System.Windows.Forms.Button RootBTN;
         private System.Windows.Forms.Button DisconnectBTN;
+        private System.ComponentModel.BackgroundWorker UpdateDirectoryBW;
     }
 }

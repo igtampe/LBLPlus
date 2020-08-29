@@ -157,6 +157,7 @@
             // LoginBW
             // 
             this.LoginBW.DoWork += new System.ComponentModel.DoWorkEventHandler(this.LoginBW_DoWork);
+            this.LoginBW.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.LoginBW_RunWorkerCompleted);
             // 
             // LoginForm
             // 
