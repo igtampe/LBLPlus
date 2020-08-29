@@ -4,11 +4,16 @@
 <td width="300">
 <img src="https://raw.githubusercontent.com/igtampe/LBLPlus/master/LBL.Server/Resources/LBL%20Standalone.png" width="300" style="float:left"/></td><td>
 <h1>LBL Plus</h1>
-LBL+ is a file transfer system that sends files Line By Line between client and server. This is a port of the SmokeSignal extension to Switchboard. LBL Should work a lot better in Switchboard than it did in SmokeSignal, given that now a file can be downloaded in a single connection, rather than one connection per line.
+LBL+ is a file transfer system that sends files Line By Line between client and server. This is a port of the SmokeSignal extension to Switchboard.
 </td>
 </tr>
 </table>
 </p>
+
+![Screenshot of LBL in action](https://raw.githubusercontent.com/igtampe/LBLPlus/master/Images/Shot.png)
+
+## Simple and convenient.
+LBL is easy to integrate into existing Switchboard applications, and although slow on larger files, it's more than usable for small text, CSV, or other files text based files. It was originally designed to back up Income Registry Files from [ViBE's EzTax](http://www.github.com/igtampe/ViBE). Now with Switchboard, performance can be noticeably better, since a connection can be maintained while uploading/downloading files. 
 
 ## How It Works
 As its name implies, LBL sends files line by line. The steps to send a file in LBL are as follows:
