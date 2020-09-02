@@ -102,7 +102,7 @@ namespace Igtampe.LBL.GUI.Forms {
                     string Filename = Path[Path.Length - 1]; //last split from \ is the filename
 
                     //If there's a file there, ask whether or not to overwrite it.
-                    if(CurrentDirectory.Files.Contains(Filename)) {
+                    if(CurrentDirectory.Files?.Contains(Filename)==true) {
                         switch(MessageBox.Show("File " + Filename + " already exists in this directory. Overwrite?","LBL",MessageBoxButtons.YesNoCancel,MessageBoxIcon.Question)) {
                             case DialogResult.Yes:
                                 UploadForm Uploader = new UploadForm(PathAsString + Filename,File,true,Connection);
